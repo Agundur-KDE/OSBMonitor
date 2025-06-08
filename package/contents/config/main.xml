@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0       http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+    <kcfgfile name=""/>
+    <group name="General">
+        <entry name="RefreshInterval" type="Int">
+            <default>60</default>
+            <tooltip>Minimum interval in seconds between API checks (recommended: &#x2265;60)</tooltip>
+            <default>60</default>
+            <min>10</min>
+            <!-- technisches Limit -->
+            <max>3600</max>
+            <!-- 1 Stunde -->
+        </entry>
+        <entry name="TargetProject" type="String">
+            <label>OBS project name</label>
+            <tooltip>The Open Build Service project to monitor (e.g. home:Agundur)</tooltip>
+            <default>home:Agundur</default>
+        </entry>
+    </group>
+</kcfg>
