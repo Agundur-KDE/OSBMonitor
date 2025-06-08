@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import org.kde.kirigami as Kirigami
+import org.kde.kirigami 2.20 as Kirigami
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
@@ -9,69 +9,94 @@ import org.kde.plasma.plasmoid
 PlasmoidItem {
     id: root
 
+    // Bindings zu deiner Config
     property string targetProject: Plasmoid.configuration.TargetProject
     property int refreshInterval: Plasmoid.configuration.RefreshInterval
 
+    // Mindestgröße beim Start
+    implicitWidth: Kirigami.Units.gridUnit * 30
+    implicitHeight: Kirigami.Units.gridUnit * 25
+    clip: true
     Plasmoid.title: i18n("OSB Monitor")
     Plasmoid.status: PlasmaCore.Types.ActiveStatus
+    Component.onCompleted: {
+        // Beispiel-Daten – später per request() ersetzen
+        buildModel.clear();
+        buildModel.append({
+            "name": root.targetProject + "/package1",
+            "status": "succeeded"
+        });
+        buildModel.append({
+            "name": root.targetProject + "/package2",
+            "status": "failed"
+        });
+    }
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: Kirigami.Units.smallSpacing
+        anchors.margins: Kirigami.Units.largeSpacing
+        spacing: Kirigami.Units.largeSpacing
 
+        // Überschrift
         PlasmaComponents.Label {
             text: i18n("OSB Monitor")
-            font.pixelSize: Kirigami.Theme.defaultFont.pointSize * 2
             horizontalAlignment: Text.AlignHCenter
-            Layout.alignment: Qt.AlignHCenter
+            font.pixelSize: Kirigami.Theme.defaultFont.pointSize * 2
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
         }
 
+        // Konfig-Projekt-Anzeige
         PlasmaComponents.Label {
             text: i18n("Monitoring project: %1").arg(root.targetProject)
+            horizontalAlignment: Text.AlignHCenter
             color: Kirigami.Theme.disabledTextColor
-            Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
         }
 
-        ListView {
-            id: buildList
-
+        // Scrollbare Liste der Build-Status
+        ScrollView {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            clip: true
 
-            model: ListModel {
-                ListElement {
-                    name: "home:Agundur/EZMonitor"
-                    status: "succeeded"
-                }
+            ListView {
+                id: buildListView
 
-                ListElement {
-                    name: "home:Agundur/OSBMonitor"
-                    status: "failed"
-                }
+                anchors.fill: parent
+                spacing: Kirigami.Units.smallSpacing
+                clip: true
+                model: buildModel
 
-            }
-
-            delegate: RowLayout {
-                spacing: Kirigami.Units.largeSpacing
-                Layout.fillWidth: true
-
-                PlasmaComponents.Label {
-                    text: name
+                delegate: RowLayout {
                     Layout.fillWidth: true
-                    wrapMode: Text.NoWrap
-                    elide: Text.ElideRight
-                }
+                    spacing: Kirigami.Units.largeSpacing
 
-                PlasmaComponents.Label {
-                    text: status
-                    color: status === "succeeded" ? "green" : status === "failed" ? "red" : "orange"
-                    font.bold: true
+                    PlasmaComponents.Label {
+                        text: name
+                        Layout.fillWidth: true
+                        wrapMode: Text.NoWrap
+                        elide: Text.ElideRight
+                    }
+
+                    PlasmaComponents.Label {
+                        text: status
+                        font.bold: true
+                        color: status === "succeeded" ? Kirigami.Theme.positiveTextColor : status === "failed" ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.warningTextColor
+                    }
+
                 }
 
             }
 
         }
 
+    }
+
+    // Dynamisches Model statt ListElement-Ausdrücken
+    ListModel {
+        id: buildModel
     }
 
 }
