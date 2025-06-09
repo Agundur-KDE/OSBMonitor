@@ -1,89 +1,100 @@
-import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
+import QtQuick 2.15
+import QtQuick.Controls 6.5 // Controls für Qt 6
+import QtQuick.Layouts 1.15
 import org.kde.kirigami 2.20 as Kirigami
-import org.kde.plasma.components as PlasmaComponents
-import org.kde.plasma.core as PlasmaCore
-import org.kde.plasma.plasmoid
+import org.kde.plasma.components 3.0 as PlasmaComponents
+import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.plasma.plasmoid 2.0 // sehr wichtig für preferredRepresentation
 
 PlasmoidItem {
     id: root
 
-    // Bindings zu deiner Config
-    property string targetProject: Plasmoid.configuration.TargetProject
-    property int refreshInterval: Plasmoid.configuration.RefreshInterval
+    property string overallStatus: {
+        for (let i = 0; i < buildModel.count; ++i) if (buildModel.get(i).status !== "succeeded") {
+            return "failed";
+        }
+        return "succeeded";
+    }
 
-    // Mindestgröße beim Start
-    implicitWidth: Kirigami.Units.gridUnit * 30
-    implicitHeight: Kirigami.Units.gridUnit * 25
-    clip: true
-    Plasmoid.title: i18n("OSB Monitor")
-    Plasmoid.status: PlasmaCore.Types.ActiveStatus
+    // Choose representation based on containment
+    Plasmoid.preferredRepresentation: root.containment.location === PlasmaCore.Types.Panel ? Plasmoid.compactRepresentation : Plasmoid.fullRepresentation
     Component.onCompleted: {
-        // Beispiel-Daten – später per request() ersetzen
+        // Temp-Daten; später durch deine API-Logik ersetzen
         buildModel.clear();
         buildModel.append({
-            "name": root.targetProject + "/package1",
+            "name": plasmoid.configuration.TargetProject + "/pkg1",
             "status": "succeeded"
         });
         buildModel.append({
-            "name": root.targetProject + "/package2",
+            "name": plasmoid.configuration.TargetProject + "/pkg2",
             "status": "failed"
         });
     }
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: Kirigami.Units.largeSpacing
-        spacing: Kirigami.Units.largeSpacing
+    // ---------------------------------------------------------------------
+    // Gemeinsame Logik
+    ListModel {
+        id: buildModel
+    }
 
-        // Überschrift
-        PlasmaComponents.Label {
-            text: i18n("OSB Monitor")
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Kirigami.Theme.defaultFont.pointSize * 2
-            Layout.fillWidth: true
-            wrapMode: Text.Wrap
-        }
+    // ---------------------------------------------------------------------
+    // 1) Full Representation (Desktop)
+    Plasmoid.fullRepresentation: Item {
+        implicitWidth: Kirigami.Units.gridUnit * 40
+        implicitHeight: Kirigami.Units.gridUnit * 35
+        clip: true
 
-        // Konfig-Projekt-Anzeige
-        PlasmaComponents.Label {
-            text: i18n("Monitoring project: %1").arg(root.targetProject)
-            horizontalAlignment: Text.AlignHCenter
-            color: Kirigami.Theme.disabledTextColor
-            Layout.fillWidth: true
-            wrapMode: Text.Wrap
-        }
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: Kirigami.Units.largeSpacing
+            spacing: Kirigami.Units.largeSpacing
 
-        // Scrollbare Liste der Build-Status
-        ScrollView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            clip: true
+            PlasmaComponents.Label {
+                text: i18n("OSB Monitor")
+                horizontalAlignment: Text.AlignHCenter
+                font.pixelSize: Kirigami.Theme.defaultFont.pointSize * 2
+                Layout.fillWidth: true
+                wrapMode: Text.Wrap
+            }
 
-            ListView {
-                id: buildListView
+            PlasmaComponents.Label {
+                text: i18n("Monitoring project: %1").arg(plasmoid.configuration.TargetProject)
+                horizontalAlignment: Text.AlignHCenter
+                color: Kirigami.Theme.disabledTextColor
+                Layout.fillWidth: true
+                wrapMode: Text.Wrap
+            }
 
-                anchors.fill: parent
-                spacing: Kirigami.Units.smallSpacing
+            ScrollView {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 clip: true
-                model: buildModel
 
-                delegate: RowLayout {
-                    Layout.fillWidth: true
-                    spacing: Kirigami.Units.largeSpacing
+                ListView {
+                    id: buildListView
 
-                    PlasmaComponents.Label {
-                        text: name
+                    anchors.fill: parent
+                    spacing: Kirigami.Units.smallSpacing
+                    clip: true
+                    model: buildModel
+
+                    delegate: RowLayout {
                         Layout.fillWidth: true
-                        wrapMode: Text.NoWrap
-                        elide: Text.ElideRight
-                    }
+                        spacing: Kirigami.Units.largeSpacing
 
-                    PlasmaComponents.Label {
-                        text: status
-                        font.bold: true
-                        color: status === "succeeded" ? Kirigami.Theme.positiveTextColor : status === "failed" ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.warningTextColor
+                        PlasmaComponents.Label {
+                            text: name
+                            Layout.fillWidth: true
+                            wrapMode: Text.NoWrap
+                            elide: Text.ElideRight
+                        }
+
+                        PlasmaComponents.Label {
+                            text: status
+                            font.bold: true
+                            color: status === "succeeded" ? Kirigami.Theme.positiveTextColor : Kirigami.Theme.negativeTextColor
+                        }
+
                     }
 
                 }
@@ -94,9 +105,21 @@ PlasmoidItem {
 
     }
 
-    // Dynamisches Model statt ListElement-Ausdrücken
-    ListModel {
-        id: buildModel
+    // ---------------------------------------------------------------------
+    // 2) Compact Representation (Panel)
+    Plasmoid.compactRepresentation: Item {
+        implicitWidth: Kirigami.Units.gridUnit * 10
+        implicitHeight: Kirigami.Units.gridUnit * 10
+        clip: true
+
+        PlasmaComponents.Label {
+            anchors.centerIn: parent
+            text: overallStatus === "succeeded" ? i18n("Success") : i18n("Error")
+            font.pixelSize: Kirigami.Theme.defaultFont.pointSize * 1.5
+            color: overallStatus === "succeeded" ? Kirigami.Theme.positiveTextColor : Kirigami.Theme.negativeTextColor
+            horizontalAlignment: Text.AlignHCenter
+        }
+
     }
 
 }
