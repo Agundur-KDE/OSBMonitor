@@ -8,12 +8,15 @@ import org.kde.plasma.plasmoid
 PlasmoidItem {
     id: root
 
-    preferredRepresentation: FullRepresentation
-
-    compactRepresentation: CompactRepresentation {
-    }
+    // Wechsel zwischen compact/full abhängig von der Größe
+    preferredRepresentation: (width < 200 || height < 100) ? compactRepresentation : fullRepresentation
 
     fullRepresentation: FullRepresentation {
+        focus: true
+    }
+
+    compactRepresentation: CompactRepresentation {
+        focus: true
     }
 
 }
