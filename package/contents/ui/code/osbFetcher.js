@@ -57,26 +57,42 @@ function fetchBuildStatus(projectUrl, callback) {
 }
 
 function parseHtml(html) {
-    // const dom = Qt.createQmlObject(
-    //     'import QtQuick 2.15; QtObject { property string content: "" }',
-    //     Qt.application,
-    //     "DOMHelper"
-    // );
-    // dom.content = html;
-console.log(html)
-    const pkgList = [];
+    const regex = /<tbody[^>]+data-statushash='([^']+)'/;
+    const match = regex.exec(html);
 
-    // Quick & Dirty: regexbasierte Extraktion (da kein DOMParser in Qt/QML verfügbar ist)
-    const regex = /class="build-state-([\w-]+)"/g;
-    let match;
-
-    console.log(regex.exec(html))
-
-    while ((match = regex.exec(html)) !== null) {
-        const pkgName = match[1].trim();
-        const statusClass = match[2].trim();
-        pkgList.push({ name: pkgName, status: statusClass });
+    if (!match) {
+        console.log("❌ Keine statushash-Daten gefunden.");
+        return [];
     }
 
-    return pkgList;
+    const escapedJson = match[1]
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, '&');  // zur Sicherheit
+
+    let statusData;
+    try {
+        statusData = JSON.parse(escapedJson);
+    } catch (e) {
+        console.log("❌ JSON Parse Error:", e);
+        return [];
+    }
+
+    // Extrahieren der Daten
+    const entries = [];
+    for (const distro in statusData) {
+        for (const arch in statusData[distro]) {
+            const pkgs = statusData[distro][arch];
+            for (const pkgName in pkgs) {
+                entries.push({
+                    distro,
+                    arch,
+                    name: pkgName,
+                    status: pkgs[pkgName].code
+                });
+            }
+        }
+    }
+
+    console.log("✅ Parsed entries:", entries);
+    return entries;
 }
