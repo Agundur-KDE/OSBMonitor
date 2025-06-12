@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import "code/osbFetcher.js" as OSB
 import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components 3.0 as PlasmaComponents
@@ -9,41 +10,83 @@ import org.kde.plasma.plasmoid
 PlasmoidItem {
     id: root
 
-    property string overallStatus: {
-        for (let i = 0; i < buildModel.count; ++i) if (buildModel.get(i).status !== "succeeded") {
-            return "failed";
-        }
-        return "succeeded";
+    // zentrales Datenmodell
+    property ListModel buildModel
+
+    // Funktion zum Datenholen
+    function reload(projectName) {
+        const url = "https://build.opensuse.org/project/monitor/" + projectName;
+        console.log(url);
+        console.log("📡 Fetching build status for:", projectName);
+        OSB.fetchBuildStatus(url, function(result) {
+            if (!result || result.length === 0)
+                console.log("⚠️ Failed or empty result from:", url);
+
+            buildModel.clear();
+            for (let i = 0; i < result.length; ++i) buildModel.append(result[i])
+        });
     }
 
     implicitWidth: Kirigami.Units.gridUnit * 30
-    implicitHeight: Kirigami.Units.gridUnit * 25
+    implicitHeight: Kirigami.Units.gridUnit * 20
     clip: true
-    // Wechsel zwischen compact/full abhängig von der Größe
     preferredRepresentation: (width < 200 || height < 100) ? compactRepresentation : fullRepresentation
-    Component.onCompleted: {
-        // Temp-Daten; später durch deine API-Logik ersetzen
-        buildModel.clear();
-        buildModel.append({
-            "name": plasmoid.configuration.TargetProject + "/pkg1",
-            "status": "succeeded"
-        });
-        buildModel.append({
-            "name": plasmoid.configuration.TargetProject + "/pkg2",
-            "status": "failed"
-        });
+
+    // Beobachterobjekt für Config
+    QtObject {
+        id: observer
+
+        property string currentProject: "home:Agundur"
+
+        function update() {
+            if (root.configuration && root.configuration.TargetProject && root.configuration.TargetProject.length > 0) {
+                currentProject = root.configuration.TargetProject;
+                console.log("✅ Config loaded:", currentProject);
+            } else {
+                console.log("⚠️ TargetProject not set – fallback used.");
+                currentProject = "home:Agundur";
+            }
+        }
+
+        Component.onCompleted: update()
     }
 
-    ListModel {
-        id: buildModel
+    // Timer zum Refresh
+    Timer {
+        id: refreshTimer
+
+        interval: 30000
+        repeat: true
+        running: false
+        onTriggered: reload(observer.currentProject)
     }
 
+    // Verzögerter Start, wenn config geladen
+    Timer {
+        interval: 300
+        running: true
+        repeat: false
+        onTriggered: {
+            observer.update();
+            reload(observer.currentProject);
+            refreshTimer.start();
+        }
+    }
+
+    buildModel: ListModel {
+    }
+
+    // Darstellungen binden das zentrale Modell
     fullRepresentation: FullRepresentation {
-        focus: true
+        id: full
+
+        buildModel: root.buildModel
     }
 
     compactRepresentation: CompactRepresentation {
-        focus: true
+        id: compact
+
+        buildModel: root.buildModel
     }
 
 }

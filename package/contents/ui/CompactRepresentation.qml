@@ -1,11 +1,14 @@
 import QtQuick
 import QtQuick.Layouts
+import "code/osbFetcher.js" as OSB
 import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.plasmoid
 
 DropArea {
+    property var buildModel
+
     width: 200
     height: 40
 
