@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls 2.15
 import QtQuick.Layouts
 import "code/osbFetcher.js" as OSB
 import org.kde.kcmutils as KCM
@@ -8,6 +9,7 @@ import org.kde.plasma.plasmoid
 
 DropArea {
     property var buildModel
+    property var tableHeaders: ["name", "i586", "x86_64"] // wird zur Laufzeit ersetzt
 
     width: 300
     height: 200
@@ -33,34 +35,36 @@ DropArea {
             wrapMode: Text.Wrap
         }
 
-        KCM.ScrollView {
+        Frame {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            clip: true
 
-            ListView {
-                id: buildListView
+            TableView {
+                id: buildTable
 
                 anchors.fill: parent
-                spacing: Kirigami.Units.smallSpacing
                 clip: true
-                model: buildModel
-
-                delegate: RowLayout {
-                    Layout.fillWidth: true
-                    spacing: Kirigami.Units.largeSpacing
-
-                    PlasmaComponents.Label {
-                        text: name
-                        Layout.fillWidth: true
-                        wrapMode: Text.NoWrap
-                        elide: Text.ElideRight
+                Component.onCompleted: {
+                    for (let i = 0; i < root.tableHeaders.length; ++i) {
+                        const role = root.tableHeaders[i];
+                        buildTable.setColumn(i, {
+                            "role": role,
+                            "title": role,
+                            "width": role === "name" ? 140 : 80
+                        });
                     }
+                }
 
-                    PlasmaComponents.Label {
-                        text: status
-                        font.bold: true
-                        color: status === "succeeded" ? Kirigami.Theme.positiveTextColor : Kirigami.Theme.negativeTextColor
+                delegate: Rectangle {
+                    implicitWidth: 100
+                    implicitHeight: 30
+                    border.color: "#ccc"
+                    color: model[TableView.role] === "failed" ? "#fdd" : "#dfd"
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: model[TableView.role] || "-"
+                        font.pixelSize: 13
                     }
 
                 }

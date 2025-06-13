@@ -62,37 +62,50 @@ function parseHtml(html) {
 
     if (!match) {
         console.log("❌ Keine statushash-Daten gefunden.");
-        return [];
+        return { headers: [], rows: [] };
     }
 
     const escapedJson = match[1]
         .replace(/&quot;/g, '"')
-        .replace(/&amp;/g, '&');  // zur Sicherheit
+        .replace(/&amp;/g, '&');
 
     let statusData;
     try {
         statusData = JSON.parse(escapedJson);
     } catch (e) {
         console.log("❌ JSON Parse Error:", e);
-        return [];
+        return { headers: [], rows: [] };
     }
 
-    // Extrahieren der Daten
-    const entries = [];
+    const archs = new Set();
+    const packages = new Set();
+
     for (const distro in statusData) {
         for (const arch in statusData[distro]) {
-            const pkgs = statusData[distro][arch];
-            for (const pkgName in pkgs) {
-                entries.push({
-                    distro,
-                    arch,
-                    name: pkgName,
-                    status: pkgs[pkgName].code
-                });
+            archs.add(arch);
+            for (const pkg in statusData[distro][arch]) {
+                packages.add(pkg);
             }
         }
     }
 
-    console.log("✅ Parsed entries:", entries);
-    return entries;
+    const rows = [];
+    for (const pkg of [...packages].sort()) {
+        const row = { name: pkg };
+        for (const arch of archs) {
+            let status = "";
+            for (const distro in statusData) {
+                const entry = statusData[distro][arch]?.[pkg];
+                if (entry) {
+                    status = entry.code;
+                }
+            }
+            row[arch] = status;
+        }
+        rows.push(row);
+    }
+
+    const headers = ["name", ...archs];
+    console.log("✅ Table parsed:", { headers: headers, rows: rows });
+    return { headers: headers, rows: rows };
 }

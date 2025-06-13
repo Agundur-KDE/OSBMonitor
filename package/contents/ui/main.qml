@@ -12,6 +12,7 @@ PlasmoidItem {
 
     // zentrales Datenmodell
     property ListModel buildModel
+    property var tableHeaders: []
 
     // Funktion zum Datenholen
     function reload(projectName) {
@@ -19,11 +20,13 @@ PlasmoidItem {
         console.log(url);
         console.log("📡 Fetching build status for:", projectName);
         OSB.fetchBuildStatus(url, function(result) {
-            if (!result || result.length === 0)
+            if (!result || !result.rows || result.rows.length === 0) {
                 console.log("⚠️ Failed or empty result from:", url);
-
+                return ;
+            }
+            tableHeaders = result.headers;
             buildModel.clear();
-            for (let i = 0; i < result.length; ++i) buildModel.append(result[i])
+            for (let i = 0; i < result.rows.length; ++i) buildModel.append(result.rows[i])
         });
     }
 
