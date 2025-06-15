@@ -14,7 +14,7 @@
         <entry name="TargetProject" type="String">
             <label>OBS project name</label>
             <tooltip>The Open Build Service project to monitor (e.g. home:Agundur)</tooltip>
-            <default>home:Agundur</default>
+            <default>Application:Astrophotography</default>
         </entry>
     </group>
 </kcfg>

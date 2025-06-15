@@ -8,6 +8,8 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 
 PlasmoidItem {
+    // alles geschieht im JS selbst (siehe oben)
+
     id: root
 
     // zentrales Datenmodell
@@ -20,13 +22,6 @@ PlasmoidItem {
         console.log(url);
         console.log("📡 Fetching build status for:", projectName);
         OSB.fetchBuildStatus(url, function(result) {
-            if (!result || !result.rows || result.rows.length === 0) {
-                console.log("⚠️ Failed or empty result from:", url);
-                return ;
-            }
-            tableHeaders = result.headers;
-            buildModel.clear();
-            for (let i = 0; i < result.rows.length; ++i) buildModel.append(result.rows[i])
         });
     }
 
@@ -39,7 +34,7 @@ PlasmoidItem {
     QtObject {
         id: observer
 
-        property string currentProject: "home:Agundur"
+        property string currentProject: "Application:Astrophotography"
 
         function update() {
             if (root.configuration && root.configuration.TargetProject && root.configuration.TargetProject.length > 0) {
@@ -47,7 +42,7 @@ PlasmoidItem {
                 console.log("✅ Config loaded:", currentProject);
             } else {
                 console.log("⚠️ TargetProject not set – fallback used.");
-                currentProject = "home:Agundur";
+                currentProject = "Application:Astrophotography";
             }
         }
 

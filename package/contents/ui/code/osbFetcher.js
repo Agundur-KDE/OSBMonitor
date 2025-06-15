@@ -1,111 +1,117 @@
+// osbFetcher.js
 
-function fetchRaw(url, callback) {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-    xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64)");
-    xhr.onload = function () {
-        console.log("📬 Status:", xhr.status);
-        console.log("📄 Body:", xhr.responseText);
-        callback && callback(xhr.responseText);
-    };
-    xhr.send();
-}
+.pragma library
+
+const severity = [
+  "failed",    // ganz oben, wenn auch nur ein einziger „failed“ auftaucht
+  "building",  // danach; z.B. „Building“ oder „pending“
+  "succeeded"  // Default-Status ganz unten
+];
 
 
 function fetchBuildStatus(projectUrl, callback) {
     var xhr = new XMLHttpRequest();
-    console.log("📡 [XHR] Opening:", projectUrl);
+    console.log("📡 [XHR] Fetching:", projectUrl);
 
     xhr.open("GET", projectUrl);
 
-     try {
-        xhr.setRequestHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0");
-
-    } catch (e) {
-        console.log("❌ setRequestHeader(User-Agent) failed:", e);
-    }
-
-     try {
-       xhr.setRequestHeader("Accept", "text/html,application/xhtml+xml");
-
+    // HTML akzeptieren
+    try {
+        xhr.setRequestHeader("Accept", "text/html,application/xhtml+xml");
     } catch (e) {
         console.log("❌ setRequestHeader(Accept) failed:", e);
     }
 
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            console.log("📬 [XHR] Status:", xhr.status);
-            // console.log("📄 [XHR] Response snippet:", xhr.responseText.substr(0, 200));
-
-            if (xhr.status === 200) {
-                const html = xhr.responseText;
-                const result = parseHtml(html);
-                callback(result);
-            } else {
-                console.log("❌ [XHR] Failed to fetch OSB page:", xhr.status);
-                callback([]);
-            }
+    xhr.onload = function () {
+        console.log("📬 [XHR] Status:", xhr.status);
+        if (xhr.status !== 200) {
+            console.log("❌ HTTP Error:", xhr.status);
+            callback({ headers: [], rows: [] });
+            return;
         }
+        // parseHtml liefert { headers, rows }
+        var result = parseHtml(xhr.responseText);
+        // modellbefüllung direkt hier:
+        if (typeof root !== "undefined") {
+            root.tableHeaders = result.headers;
+            root.buildModel.clear();
+            result.rows.forEach(function(r) {
+                root.buildModel.append(r);
+            });
+            console.log("📊 tableHeaders =", result.headers);
+            console.log("📊 buildModel.count =", root.buildModel.count);
+        }
+        callback(result);
     };
 
     xhr.onerror = function (e) {
         console.log("❌ [XHR] Network error:", e);
-        callback([]);
+        callback({ headers: [], rows: [] });
     };
 
     xhr.send();
 }
 
-function parseHtml(html) {
-    const regex = /<tbody[^>]+data-statushash='([^']+)'/;
-    const match = regex.exec(html);
 
+function parseHtml(html) {
+
+    // 1) JSON-String aus data-statushash
+    var regex = /<tbody[^>]+data-statushash='([^']+)'/;
+    var match = regex.exec(html);
     if (!match) {
         console.log("❌ Keine statushash-Daten gefunden.");
         return { headers: [], rows: [] };
     }
 
-    const escapedJson = match[1]
+    // 2) Unescape
+    var escaped = match[1]
         .replace(/&quot;/g, '"')
         .replace(/&amp;/g, '&');
 
-    let statusData;
+    var statusData;
     try {
-        statusData = JSON.parse(escapedJson);
+        statusData = JSON.parse(escaped);
     } catch (e) {
         console.log("❌ JSON Parse Error:", e);
         return { headers: [], rows: [] };
     }
 
-    const archs = new Set();
-    const packages = new Set();
+ console.log(escaped);
+    var distros = Object.keys(statusData);
+    var archs = [];
+    var pkgs  = [];
+    distros.forEach(function(distro) {
 
-    for (const distro in statusData) {
-        for (const arch in statusData[distro]) {
-            archs.add(arch);
-            for (const pkg in statusData[distro][arch]) {
-                packages.add(pkg);
-            }
-        }
-    }
+        console.log(Object.keys(statusData[distro]));
 
-    const rows = [];
-    for (const pkg of [...packages].sort()) {
-        const row = { name: pkg };
-        for (const arch of archs) {
-            let status = "";
-            for (const distro in statusData) {
-                const entry = statusData[distro][arch]?.[pkg];
+
+        // Object.keys(statusData[distro]).forEach(function(arch) {
+        //     if (archs.indexOf(arch) === -1) archs.push(arch);
+        //     Object.keys(statusData[distro][arch]).forEach(function(p) {
+        //         if (pkgs.indexOf(p) === -1) pkgs.push(p);
+        //     });
+        // });
+    });
+
+    // 5) headers & rows bauen
+    var headers = ["name"].concat(archs);
+    var rows = pkgs.sort().map(function(pkg) {
+        var row = { name: pkg };
+        archs.forEach(function(arch) {
+            var code = "";
+            Object.keys(statusData).some(function(distro) {
+                var entry = statusData[distro][arch] && statusData[distro][arch][pkg];
                 if (entry) {
-                    status = entry.code;
+                    code = entry.code;
+                    return true;
                 }
-            }
-            row[arch] = status;
-        }
-        rows.push(row);
-    }
+                return false;
+            });
+            row[arch] = code;
+        });
+        return row;
+    });
 
-    const headers = ["name", ...archs];
-    console.log("✅ Table parsed:", { headers: headers, rows: rows });
+    console.log("✅ parseHtml produced:", { headers: headers, rows: rows });
     return { headers: headers, rows: rows };
 }

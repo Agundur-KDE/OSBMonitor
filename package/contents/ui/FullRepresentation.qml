@@ -10,6 +10,7 @@ import org.kde.plasma.plasmoid
 DropArea {
     property var buildModel
     property var tableHeaders: ["name", "i586", "x86_64"] // wird zur Laufzeit ersetzt
+    property alias buildTableModel: buildTable.model
 
     width: 300
     height: 200
@@ -53,6 +54,8 @@ DropArea {
                             "width": role === "name" ? 140 : 80
                         });
                     }
+                    console.log("🪵 Headers:", root.tableHeaders);
+                    console.log("🪵 Rows:", buildTable.model.count);
                 }
 
                 delegate: Rectangle {
