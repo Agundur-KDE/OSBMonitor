@@ -3,7 +3,7 @@
     <kcfgfile name=""/>
     <group name="General">
         <entry name="RefreshInterval" type="Int">
-            <default>60</default>
+            <default>6</default>
             <tooltip>Minimum interval in seconds between API checks (recommended: &#x2265;60)</tooltip>
             <default>60</default>
             <min>10</min>

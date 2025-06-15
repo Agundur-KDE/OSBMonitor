@@ -1,3 +1,5 @@
+// }
+
 import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
@@ -9,86 +11,66 @@ import org.kde.plasma.plasmoid
 
 DropArea {
     property var buildModel
-    property var tableHeaders: ["name", "i586", "x86_64"] // wird zur Laufzeit ersetzt
 
-    width: 300
-    height: 200
+    Component.onCompleted: {
+        buildModel.append({
+            "package": "KCast",
+            "status": "succeeded"
+        });
+    }
 
-    ColumnLayout {
+    ListView {
+        id: buildList
+
         anchors.fill: parent
-        anchors.margins: Kirigami.Units.largeSpacing
-        spacing: Kirigami.Units.largeSpacing
+        spacing: 4
+        model: buildModel
+        clip: true
 
-        PlasmaComponents.Label {
-            text: i18n("OSB Monitor")
-            horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: Kirigami.Theme.defaultFont.pointSize * 2
-            Layout.fillWidth: true
-            wrapMode: Text.Wrap
-        }
+        delegate: Rectangle {
+            width: buildList.width
+            height: 32
+            color: status === "failed" ? "#ffcccc" : status === "building" ? "#fffacc" : "#ddffdd"
 
-        PlasmaComponents.Label {
-            text: i18n("Monitoring project: %1").arg(plasmoid.configuration.TargetProject)
-            horizontalAlignment: Text.AlignHCenter
-            color: Kirigami.Theme.disabledTextColor
-            Layout.fillWidth: true
-            wrapMode: Text.Wrap
-        }
+            RowLayout {
+                anchors.fill: parent
+                spacing: 10
 
-        ListView {
-            id: buildList
+                Text {
+                    text: model["package"]
+                    Layout.fillWidth: true
+                    font.bold: true
+                }
 
-            anchors.fill: parent
-            spacing: 4
-            model: buildModel
-            clip: true
-
-            delegate: Rectangle {
-                width: buildList.width
-                height: 32
-                color: status === "failed" ? "#ffcccc" : status === "building" ? "#fffacc" : "#ddffdd"
-
-                RowLayout {
-                    anchors.fill: parent
-                    spacing: 10
-
-                    Text {
-                        text: model["package"]
-                        Layout.fillWidth: true
-                        font.bold: true
-                    }
-
-                    Text {
-                        text: model["status"]
-                        color: "black"
-                        Layout.alignment: Qt.AlignRight
-                    }
-
+                Text {
+                    text: model["status"]
+                    color: "black"
+                    Layout.alignment: Qt.AlignRight
                 }
 
             }
 
-            header: Rectangle {
-                height: 30
-                color: "#cccccc"
-                width: parent.width
+        }
 
-                RowLayout {
-                    anchors.fill: parent
-                    spacing: 10
+        header: Rectangle {
+            height: 30
+            color: "#cccccc"
+            width: parent.width
 
-                    Text {
-                        text: "Package"
-                        font.bold: true
-                        Layout.fillWidth: true
-                    }
+            RowLayout {
+                anchors.fill: parent
+                spacing: 10
 
-                    Text {
-                        text: "Status"
-                        font.bold: true
-                        Layout.alignment: Qt.AlignRight
-                    }
+                Text {
+                    text: "Package"
+                    font.bold: true
+                    Layout.fillWidth: true
+                }
 
+                Text {
+                    text: "Status"
+                    font.bold: true
+                    Layout.alignment: Qt.AlignRight
                 }
 
             }

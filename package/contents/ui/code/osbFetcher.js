@@ -1,47 +1,29 @@
 // osbFetcher.js
 
-.pragma library
-
-const severity = [
-  "failed",    // ganz oben, wenn auch nur ein einziger „failed“ auftaucht
-  "building",  // danach; z.B. „Building“ oder „pending“
-  "succeeded"  // Default-Status ganz unten
-];
-
 
 function fetchBuildStatus(projectUrl, callback) {
     var xhr = new XMLHttpRequest();
-    console.log("📡 [XHR] Fetching:", projectUrl);
 
     xhr.open("GET", projectUrl);
 
-    // HTML akzeptieren
     try {
         xhr.setRequestHeader("Accept", "text/html,application/xhtml+xml");
     } catch (e) {
         console.log("❌ setRequestHeader(Accept) failed:", e);
     }
 
-    xhr.onload = function () {
-        console.log("📬 [XHR] Status:", xhr.status);
-        if (xhr.status !== 200) {
-            console.log("❌ HTTP Error:", xhr.status);
-            callback({ headers: [], rows: [] });
-            return;
-        }
-        // parseHtml liefert { headers, rows }
-        var result = parseHtml(xhr.responseText);
-        // modellbefüllung direkt hier:
-        callback(result);
-    };
+    xhr.onreadystatechange = (function f() {
+        // console.log(callback);
+        callback(xhr.responseText);
+    });
 
     xhr.onerror = function (e) {
         console.log("❌ [XHR] Network error:", e);
-        callback({ headers: [], rows: [] });
     };
 
     xhr.send();
 }
+
 
 function summarizePackageStatuses(statusData) {
     const statusPriority = [
@@ -94,38 +76,40 @@ function parseHtml(html) {
     var match = regex.exec(html);
     if (!match) {
         console.log("❌ Keine statushash-Daten gefunden.");
-        return { headers: [], rows: [] };
+        return false;
     }
 
     // 2) Unescape
     var escaped = match[1]
-        .replace(/&quot;/g, '"')
-        .replace(/&amp;/g, '&');
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&');
 
     var statusData;
     try {
         statusData = JSON.parse(escaped);
     } catch (e) {
         console.log("❌ JSON Parse Error:", e);
-        return { headers: [], rows: [] };
+        return false;
     }
+// buildModel.clear();
+     console.log(statusData);
 
-    // console.log(statusData);
-    var sps = summarizePackageStatuses(statusData);
-    const summarizedList = Object.entries(sps).map(([pkg, status]) => {
-    return { package: pkg, status: status };
-    });
+var modelData = summarizePackageStatuses(statusData)
 
-    console.log("📋 summarizedList:", JSON.stringify(summarizedList, null, 2));
+// console.log(JSON.stringify(modelData, null, 2));
 
-// Jetzt kannst du z. B. das ListModel aktualisieren
-    model.clear();
-    for (let i = 0; i < summarizedList.length; ++i) {
-        model.append(summarizedList[i]);
+
+
+     for (let key in modelData) {
+    if (modelData.hasOwnProperty(key)) {
+        // console.log(key + ": " + modelData[key]);
+         buildModel.append({ package: key, status: String(modelData[key]) });
     }
+}
 
-    // console.log(sps);
-    // console.log(JSON.stringify(sps, null, 2));
-    // console.log("✅ parseHtml produced:", { headers: headers, rows: rows });
-    // return { headers: headers, rows: rows };
+    // var sps = summarizePackageStatuses(statusData);
+    // const summarizedList = Object.entries(sps).map(([pkg, status]) => {
+    //     return { package: pkg, status: status };
+    // });
+
 }

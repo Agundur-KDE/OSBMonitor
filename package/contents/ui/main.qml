@@ -8,22 +8,11 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 
 PlasmoidItem {
-    // alles geschieht im JS selbst (siehe oben)
-
     id: root
 
-    // zentrales Datenmodell
-    property alias buildModel: buildTable.model
-    property var tableHeaders: []
-
-    // Funktion zum Datenholen
-    function reload(projectName) {
-        const url = "https://build.opensuse.org/project/monitor/" + projectName;
-        console.log(url);
-        console.log("📡 Fetching build status for:", projectName);
-        OSB.fetchBuildStatus(url, function(result) {
-        });
-    }
+    property string target: Plasmoid.configuration.TargetProject //"192.168.178.38"
+    property int refreshInterval: Plasmoid.configuration.RefreshInterval //8050
+    property alias buildModel: buildModel
 
     implicitWidth: Kirigami.Units.gridUnit * 30
     implicitHeight: Kirigami.Units.gridUnit * 20
@@ -31,47 +20,16 @@ PlasmoidItem {
     preferredRepresentation: (width < 200 || height < 100) ? compactRepresentation : fullRepresentation
 
     // Beobachterobjekt für Config
-    QtObject {
-        id: observer
-
-        property string currentProject: "Application:Astrophotography"
-
-        function update() {
-            if (root.configuration && root.configuration.TargetProject && root.configuration.TargetProject.length > 0) {
-                currentProject = root.configuration.TargetProject;
-                console.log("✅ Config loaded:", currentProject);
-            } else {
-                console.log("⚠️ TargetProject not set – fallback used.");
-                currentProject = "Application:Astrophotography";
-            }
-        }
-
-        Component.onCompleted: update()
-    }
-
-    // Timer zum Refresh
     Timer {
-        id: refreshTimer
-
-        interval: 30000
-        repeat: true
-        running: false
-        onTriggered: reload(observer.currentProject)
-    }
-
-    // Verzögerter Start, wenn config geladen
-    Timer {
-        interval: 300
         running: true
-        repeat: false
-        onTriggered: {
-            observer.update();
-            reload(observer.currentProject);
-            refreshTimer.start();
-        }
+        repeat: true
+        triggeredOnStart: true
+        interval: refreshInterval * 1000
+        onTriggered: OSB.fetchBuildStatus('https://build.opensuse.org/project/monitor/' + target, OSB.parseHtml)
     }
 
-    buildModel: ListModel {
+    ListModel {
+        id: buildModel
     }
 
     // Darstellungen binden das zentrale Modell
