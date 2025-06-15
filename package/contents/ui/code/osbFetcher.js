@@ -32,15 +32,6 @@ function fetchBuildStatus(projectUrl, callback) {
         // parseHtml liefert { headers, rows }
         var result = parseHtml(xhr.responseText);
         // modellbefüllung direkt hier:
-        if (typeof root !== "undefined") {
-            root.tableHeaders = result.headers;
-            root.buildModel.clear();
-            result.rows.forEach(function(r) {
-                root.buildModel.append(r);
-            });
-            console.log("📊 tableHeaders =", result.headers);
-            console.log("📊 buildModel.count =", root.buildModel.count);
-        }
         callback(result);
     };
 
@@ -50,6 +41,49 @@ function fetchBuildStatus(projectUrl, callback) {
     };
 
     xhr.send();
+}
+
+function summarizePackageStatuses(statusData) {
+    const statusPriority = [
+        "failed",
+        "broken",
+        "unresolvable",
+        "blocked",
+        "disabled",
+        "excluded",
+        "scheduled",
+        "building",
+        "succeeded"
+    ];
+
+    const summary = {};
+
+    for (const distro in statusData) {
+        const arches = statusData[distro];
+        for (const arch in arches) {
+            const packages = arches[arch];
+            for (const pkgName in packages) {
+                const pkg = packages[pkgName];
+                const code = pkg.code;
+
+                if (!code || typeof code !== "string") continue; // skip invalid/empty
+
+                if (!(pkgName in summary)) {
+                    summary[pkgName] = code;
+                } else {
+                    const current = summary[pkgName];
+                    // take the "worse" one based on priority
+                    if (
+                        statusPriority.indexOf(code) < statusPriority.indexOf(current)
+                    ) {
+                        summary[pkgName] = code;
+                    }
+                }
+            }
+        }
+    }
+
+    return summary;
 }
 
 
@@ -76,42 +110,11 @@ function parseHtml(html) {
         return { headers: [], rows: [] };
     }
 
- console.log(escaped);
-    var distros = Object.keys(statusData);
-    var archs = [];
-    var pkgs  = [];
-    distros.forEach(function(distro) {
+    // console.log(statusData);
+    var sps = summarizePackageStatuses(statusData);
 
-        console.log(Object.keys(statusData[distro]));
-
-
-        // Object.keys(statusData[distro]).forEach(function(arch) {
-        //     if (archs.indexOf(arch) === -1) archs.push(arch);
-        //     Object.keys(statusData[distro][arch]).forEach(function(p) {
-        //         if (pkgs.indexOf(p) === -1) pkgs.push(p);
-        //     });
-        // });
-    });
-
-    // 5) headers & rows bauen
-    var headers = ["name"].concat(archs);
-    var rows = pkgs.sort().map(function(pkg) {
-        var row = { name: pkg };
-        archs.forEach(function(arch) {
-            var code = "";
-            Object.keys(statusData).some(function(distro) {
-                var entry = statusData[distro][arch] && statusData[distro][arch][pkg];
-                if (entry) {
-                    code = entry.code;
-                    return true;
-                }
-                return false;
-            });
-            row[arch] = code;
-        });
-        return row;
-    });
-
+    console.log(sps);
+    console.log(JSON.stringify(sps, null, 2));
     console.log("✅ parseHtml produced:", { headers: headers, rows: rows });
     return { headers: headers, rows: rows };
 }
