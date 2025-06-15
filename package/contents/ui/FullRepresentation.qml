@@ -41,35 +41,21 @@ DropArea {
             Layout.fillHeight: true
 
             TableView {
-                id: buildTable
-
                 anchors.fill: parent
-                clip: true
-                Component.onCompleted: {
-                    for (let i = 0; i < root.tableHeaders.length; ++i) {
-                        const role = root.tableHeaders[i];
-                        buildTable.setColumn(i, {
-                            "role": role,
-                            "title": role,
-                            "width": role === "name" ? 140 : 80
-                        });
-                    }
-                    console.log("🪵 Headers:", root.tableHeaders);
-                    console.log("🪵 Rows:", buildTable.model.count);
+                model: buildModel
+                columnSpacing: 8
+                rowSpacing: 4
+
+                TableViewColumn {
+                    role: "package"
+                    title: "Package"
+                    width: 150
                 }
 
-                delegate: Rectangle {
-                    implicitWidth: 100
-                    implicitHeight: 30
-                    border.color: "#ccc"
-                    color: model[TableView.role] === "failed" ? "#fdd" : "#dfd"
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: model[TableView.role] || "-"
-                        font.pixelSize: 13
-                    }
-
+                TableViewColumn {
+                    role: "status"
+                    title: "Status"
+                    width: 100
                 }
 
             }

@@ -112,9 +112,20 @@ function parseHtml(html) {
 
     // console.log(statusData);
     var sps = summarizePackageStatuses(statusData);
+    const summarizedList = Object.entries(sps).map(([pkg, status]) => {
+    return { package: pkg, status: status };
+    });
 
-    console.log(sps);
-    console.log(JSON.stringify(sps, null, 2));
-    console.log("✅ parseHtml produced:", { headers: headers, rows: rows });
-    return { headers: headers, rows: rows };
+    console.log("📋 summarizedList:", JSON.stringify(summarizedList, null, 2));
+
+// Jetzt kannst du z. B. das ListModel aktualisieren
+    model.clear();
+    for (let i = 0; i < summarizedList.length; ++i) {
+        model.append(summarizedList[i]);
+    }
+
+    // console.log(sps);
+    // console.log(JSON.stringify(sps, null, 2));
+    // console.log("✅ parseHtml produced:", { headers: headers, rows: rows });
+    // return { headers: headers, rows: rows };
 }
