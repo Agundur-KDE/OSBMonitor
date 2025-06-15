@@ -10,8 +10,8 @@ import org.kde.plasma.plasmoid
 PlasmoidItem {
     id: root
 
-    property string target: Plasmoid.configuration.TargetProject //"192.168.178.38"
-    property int refreshInterval: Plasmoid.configuration.RefreshInterval //8050
+    property string target: Plasmoid.configuration.targetProject
+    property int refreshInterval: Plasmoid.configuration.refreshInterval
     property alias buildModel: buildModel
 
     implicitWidth: Kirigami.Units.gridUnit * 30

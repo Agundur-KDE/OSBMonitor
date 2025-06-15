@@ -20,7 +20,7 @@ function fetchBuildStatus(projectUrl, callback) {
     xhr.onerror = function (e) {
         console.log("❌ [XHR] Network error:", e);
     };
-    console.log("🕒 " + new Date().toLocaleTimeString());
+    // console.log("🕒 " + new Date().toLocaleTimeString());
     xhr.send();
 }
 

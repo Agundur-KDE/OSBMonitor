@@ -7,28 +7,29 @@ import org.kde.kirigami as Kirigami
 KCM.SimpleKCM {
     id: root
 
-    property string cfg_TargetProject
-    property int cfg_RefreshInterval
-    property string cfg_TargetProjectDefault: "home:Agundur"
-    property int cfg_RefreshIntervalDefault: 60
+    property alias cfg_targetProject: update_targetProject.text
+    property alias cfg_refreshInterval: update_refreshInterval.value
+    property string cfg_targetProjectDefault: "home:Agundur"
+    property int cfg_refreshIntervalDefault: 60
 
     Kirigami.FormLayout {
         QQC2.TextField {
-            id: update_TargetProject
+            id: update_targetProject
 
             Kirigami.FormData.label: i18n("OBS project name")
-            text: cfg_TargetProject
-            onTextChanged: cfg_TargetProject = text
+            text: plasmoid.configuration.targetProject // Initialwert
+            onTextChanged: {
+                plasmoid.configuration.targetProject = text;
+            }
         }
 
         QQC2.SpinBox {
-            id: update_RefreshInterval
+            id: update_refreshInterval
 
             Kirigami.FormData.label: i18n("Refresh interval (seconds)")
             from: 10
             to: 3600
-            value: cfg_RefreshInterval
-            onValueChanged: cfg_RefreshInterval = value
+            onValueChanged: plasmoid.configuration.refreshInterval = value
         }
 
     }
