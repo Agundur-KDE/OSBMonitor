@@ -7,7 +7,7 @@ import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.plasmoid
 
 DropArea {
-    property var overallStatus
+    property string overallStatus: "unknown"
 
     width: 200
     height: 40
