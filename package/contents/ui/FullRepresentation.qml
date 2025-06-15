@@ -12,65 +12,67 @@ import org.kde.plasma.plasmoid
 DropArea {
     property var buildModel
 
-    Component.onCompleted: {
-        buildModel.append({
-            "package": "KCast",
-            "status": "succeeded"
-        });
-    }
-
-    ListView {
-        id: buildList
-
+    Frame {
         anchors.fill: parent
-        spacing: 4
-        model: buildModel
-        clip: true
+        padding: 10 // Innenabstand, geht nur in QtQuick.Controls
 
-        delegate: Rectangle {
-            width: buildList.width
-            height: 32
-            color: status === "failed" ? "#ffcccc" : status === "building" ? "#fffacc" : "#ddffdd"
+        ListView {
+            id: buildList
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: 10
+            anchors.fill: parent
+            spacing: 4
+            model: buildModel
+            clip: true
 
-                Text {
-                    text: model["package"]
-                    Layout.fillWidth: true
-                    font.bold: true
-                }
+            delegate: Rectangle {
+                width: buildList.width
+                height: 32
+                color: status === "failed" ? "#ffcccc" : status === "building" ? "#fffacc" : "#ddffdd"
 
-                Text {
-                    text: model["status"]
-                    color: "black"
-                    Layout.alignment: Qt.AlignRight
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 10
+                    anchors.margins: 10
+
+                    Text {
+                        text: model["package"]
+                        Layout.fillWidth: true
+                        font.bold: true
+                    }
+
+                    Text {
+                        text: model["status"]
+                        color: "black"
+                        Layout.alignment: Qt.AlignRight
+                    }
+
                 }
 
             }
 
-        }
+            header: Rectangle {
+                height: 30
+                // color: "#cccccc"
+                width: parent.width
 
-        header: Rectangle {
-            height: 30
-            color: "#cccccc"
-            width: parent.width
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 10
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: 10
+                    Text {
+                        text: "Package"
+                        font.bold: true
+                        Layout.fillWidth: true
+                        padding: 10
+                    }
 
-                Text {
-                    text: "Package"
-                    font.bold: true
-                    Layout.fillWidth: true
-                }
+                    Text {
+                        text: "Status"
+                        font.bold: true
+                        Layout.alignment: Qt.AlignRight
+                        padding: 10
+                    }
 
-                Text {
-                    text: "Status"
-                    font.bold: true
-                    Layout.alignment: Qt.AlignRight
                 }
 
             }

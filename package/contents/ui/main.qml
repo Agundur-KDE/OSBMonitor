@@ -18,9 +18,15 @@ PlasmoidItem {
     implicitHeight: Kirigami.Units.gridUnit * 20
     clip: true
     preferredRepresentation: (width < 200 || height < 100) ? compactRepresentation : fullRepresentation
+    Component.onCompleted: {
+        console.log("interval: " + refreshInterval * 1000);
+        console.log("TargetProject: " + target);
+    }
 
     // Beobachterobjekt für Config
     Timer {
+        id: intervalTimer
+
         running: true
         repeat: true
         triggeredOnStart: true

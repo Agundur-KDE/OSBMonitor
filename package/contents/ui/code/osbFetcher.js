@@ -20,7 +20,7 @@ function fetchBuildStatus(projectUrl, callback) {
     xhr.onerror = function (e) {
         console.log("❌ [XHR] Network error:", e);
     };
-
+    console.log("🕒 " + new Date().toLocaleTimeString());
     xhr.send();
 }
 
@@ -71,10 +71,14 @@ function summarizePackageStatuses(statusData) {
 
 function parseHtml(html) {
 
+    if (!html)
+        return false;
+
     // 1) JSON-String aus data-statushash
     var regex = /<tbody[^>]+data-statushash='([^']+)'/;
     var match = regex.exec(html);
     if (!match) {
+
         console.log("❌ Keine statushash-Daten gefunden.");
         return false;
     }
@@ -91,25 +95,17 @@ function parseHtml(html) {
         console.log("❌ JSON Parse Error:", e);
         return false;
     }
-// buildModel.clear();
-     console.log(statusData);
-
-var modelData = summarizePackageStatuses(statusData)
-
-// console.log(JSON.stringify(modelData, null, 2));
+    buildModel.clear();
 
 
+    var modelData = summarizePackageStatuses(statusData)
 
-     for (let key in modelData) {
-    if (modelData.hasOwnProperty(key)) {
-        // console.log(key + ": " + modelData[key]);
-         buildModel.append({ package: key, status: String(modelData[key]) });
+    // console.log(JSON.stringify(modelData, null, 2));
+
+    for (let key in modelData) {
+        if (modelData.hasOwnProperty(key)) {
+            // console.log(key + ": " + modelData[key]);
+            buildModel.append({ package: key, status: String(modelData[key]) });
+        }
     }
-}
-
-    // var sps = summarizePackageStatuses(statusData);
-    // const summarizedList = Object.entries(sps).map(([pkg, status]) => {
-    //     return { package: pkg, status: status };
-    // });
-
 }
