@@ -69,6 +69,32 @@ function summarizePackageStatuses(statusData) {
 }
 
 
+function summarizeWorstStatusFromModel(model) {
+    const statusPriority = [
+        "broken",
+        "failed",
+        "unresolvable",
+        "blocked",
+        "disabled",
+        "excluded",
+        "building",
+        "finished",
+        "succeeded"
+    ];
+
+    let worstIndex = statusPriority.length - 1; // Start mit "succeeded"
+
+    for (let i = 0; i < model.count; ++i) {
+        const status = model.get(i).status;
+        const index = statusPriority.indexOf(status);
+        if (index !== -1 && index < worstIndex) {
+            worstIndex = index;
+        }
+    }
+
+    return statusPriority[worstIndex];
+}
+
 function parseHtml(html) {
 
     if (!html)

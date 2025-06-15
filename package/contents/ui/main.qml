@@ -13,6 +13,7 @@ PlasmoidItem {
     property string target: Plasmoid.configuration.targetProject
     property int refreshInterval: Plasmoid.configuration.refreshInterval
     property alias buildModel: buildModel
+    property var overallStatus: "searching ..."
 
     implicitWidth: Kirigami.Units.gridUnit * 30
     implicitHeight: Kirigami.Units.gridUnit * 20
@@ -31,7 +32,11 @@ PlasmoidItem {
         repeat: true
         triggeredOnStart: true
         interval: refreshInterval * 1000
-        onTriggered: OSB.fetchBuildStatus('https://build.opensuse.org/project/monitor/' + target, OSB.parseHtml)
+        onTriggered: {
+            OSB.fetchBuildStatus('https://build.opensuse.org/project/monitor/' + target, OSB.parseHtml);
+            overallStatus = OSB.summarizeWorstStatusFromModel(buildModel);
+            console.log(overallStatus);
+        }
     }
 
     ListModel {
@@ -48,7 +53,7 @@ PlasmoidItem {
     compactRepresentation: CompactRepresentation {
         id: compact
 
-        buildModel: root.buildModel
+        overallStatus: root.overallStatus
     }
 
 }

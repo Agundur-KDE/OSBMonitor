@@ -7,14 +7,16 @@ import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.plasmoid
 
 DropArea {
-    property var buildModel
+    property var overallStatus
 
     width: 200
     height: 40
 
     PlasmaComponents.Label {
         anchors.centerIn: parent
-        text: overallStatus === "succeeded" ? i18n("Success") : i18n("Error")
+        text: "Status: " + overallStatus
+        width: parent.width - Kirigami.Units.largeSpacing * 2
+        wrapMode: Text.Wrap
         font.pixelSize: Kirigami.Theme.defaultFont.pointSize * 1.5
         color: overallStatus === "succeeded" ? Kirigami.Theme.positiveTextColor : Kirigami.Theme.negativeTextColor
         horizontalAlignment: Text.AlignHCenter
