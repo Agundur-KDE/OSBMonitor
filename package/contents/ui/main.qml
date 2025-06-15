@@ -13,7 +13,7 @@ PlasmoidItem {
     id: root
 
     // zentrales Datenmodell
-    property ListModel buildModel
+    property alias buildModel: buildTable.model
     property var tableHeaders: []
 
     // Funktion zum Datenholen

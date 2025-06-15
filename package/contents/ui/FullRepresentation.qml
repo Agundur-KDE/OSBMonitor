@@ -10,7 +10,6 @@ import org.kde.plasma.plasmoid
 DropArea {
     property var buildModel
     property var tableHeaders: ["name", "i586", "x86_64"] // wird zur Laufzeit ersetzt
-    property alias buildTableModel: buildTable.model
 
     width: 300
     height: 200
@@ -36,26 +35,60 @@ DropArea {
             wrapMode: Text.Wrap
         }
 
-        Frame {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+        ListView {
+            id: buildList
 
-            TableView {
-                anchors.fill: parent
-                model: buildModel
-                columnSpacing: 8
-                rowSpacing: 4
+            anchors.fill: parent
+            spacing: 4
+            model: buildModel
+            clip: true
 
-                TableViewColumn {
-                    role: "package"
-                    title: "Package"
-                    width: 150
+            delegate: Rectangle {
+                width: buildList.width
+                height: 32
+                color: status === "failed" ? "#ffcccc" : status === "building" ? "#fffacc" : "#ddffdd"
+
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 10
+
+                    Text {
+                        text: model["package"]
+                        Layout.fillWidth: true
+                        font.bold: true
+                    }
+
+                    Text {
+                        text: model["status"]
+                        color: "black"
+                        Layout.alignment: Qt.AlignRight
+                    }
+
                 }
 
-                TableViewColumn {
-                    role: "status"
-                    title: "Status"
-                    width: 100
+            }
+
+            header: Rectangle {
+                height: 30
+                color: "#cccccc"
+                width: parent.width
+
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 10
+
+                    Text {
+                        text: "Package"
+                        font.bold: true
+                        Layout.fillWidth: true
+                    }
+
+                    Text {
+                        text: "Status"
+                        font.bold: true
+                        Layout.alignment: Qt.AlignRight
+                    }
+
                 }
 
             }
