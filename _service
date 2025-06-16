@@ -1,0 +1,11 @@
+<services>
+  <service name="tar_scm" mode="buildtime">
+      <param name="url">https://www.opencode.net/agundur/osbmonitor.git/</param>
+    <param name="scm">git</param>
+    <param name="revision">HEAD</param>
+    <param name="version">0.1.0</param>
+    <param name="filename">osbmonitor</param>
+    <param name="extension">tar.gz</param>
+    <param name="changesgenerate">disable</param>
+  </service>
+</services>
