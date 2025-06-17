@@ -43,7 +43,16 @@ make
 make install (as root)
 ```
 
-## 🛠️ Installing OSBMonitor via the openSUSE Build Service Repository
+### 🖱 KDE GUI
+
+1. Download `de.agundur.osbmonitor.plasmoid`
+2. install with:
+
+```bash
+plasmapkg2  --type Plasma/Applet -i de.agundur.osbmonitor.plasmoid
+```
+
+## 🛠️ Installing OSBMonitor via the openSUSE Build Service Repository  (recommended)
 
 
 ```bash
