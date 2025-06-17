@@ -33,6 +33,7 @@ OSBMonitor is a lightweight KDE Plasma 6 applet that displays build status from 
 
 ## Installation
 
+```bash
 mkdir build && cd build
 
 cmake ..
@@ -40,9 +41,9 @@ cmake ..
 make
 
 make install (as root)
+```
 
-
-## 🛠️ Installing OSBonitor via the openSUSE Build Service Repository
+## 🛠️ Installing OSBMonitor via the openSUSE Build Service Repository
 
 
 ```bash
@@ -55,7 +56,7 @@ sudo zypper --gpg-auto-import-keys ref
 # Refresh repository metadata
 sudo zypper ref
 
-# Install EZMonitor
+# Install OSBMonitor
 sudo zypper in osbmonitor
 ```
 
