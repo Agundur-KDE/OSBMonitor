@@ -18,7 +18,7 @@
 </a></div>
 
 ## Description
-OSBMonitor is a lightweight KDE Plasma 6 applet that displays build status from your Open Suse Build service
+OSBMonitor is a lightweight KDE Plasma 6 applet that displays build status from your Open Suse Build service projects
 
 
 ## ✅ Features
@@ -26,14 +26,13 @@ OSBMonitor is a lightweight KDE Plasma 6 applet that displays build status from 
 - Built with pure QML – no C++ or Python dependencies
 
 
-
-
 ## Visuals
-
-
+![Full Representation](OSBMonitor_1.png)
+![Compact Representation](OSBMonitor_2.png)
 
 
 ## Installation
+
 mkdir build && cd build
 
 cmake ..
@@ -43,27 +42,30 @@ make
 make install (as root)
 
 
-### 🖱 KDE GUI (recommended)
+## 🛠️ Installing OSBonitor via the openSUSE Build Service Repository
 
 
+```bash
+# Add the repository
+sudo zypper ar -f https://download.opensuse.org/repositories/home:/Agundur/openSUSE_Tumbleweed/home:Agundur.repo
 
-## Usage
+# Automatically import GPG key (required once)
+sudo zypper --gpg-auto-import-keys ref
 
+# Refresh repository metadata
+sudo zypper ref
+
+# Install EZMonitor
+sudo zypper in osbmonitor
+```
 
 
 ## Support
 Open an issue in git ...
 
 
-
-## Roadmap
-
-
 ## Contributing
 accepting contributions ...
-
-
-
 
 
 ## Authors and acknowledgment
