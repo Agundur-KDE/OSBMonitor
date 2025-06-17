@@ -23,7 +23,12 @@ OSBMonitor is a lightweight KDE Plasma 6 applet that displays build status from 
 
 ## ✅ Features
 
-- Built with pure QML – no C++ or Python dependencies
+- Dual View: Compact panel display and full popup with detailed package statuses
+
+- OBS Integration: Monitors your selected Open Build Service (OBS) project (adjustable)
+
+- Configurable Interval: Adjustable refresh interval for status updates (default: every 10 seconds)
+
 
 
 ## Visuals
