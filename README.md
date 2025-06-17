@@ -19,7 +19,7 @@
 
 ## Description
 OSBMonitor is a lightweight KDE Plasma 6 applet that displays build status from your Open Suse Build service projects
-
+[https://build.opensuse.org/](https://build.opensuse.org/)
 
 ## 🏠 Homepage
 
