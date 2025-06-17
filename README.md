@@ -39,10 +39,8 @@ OSBMonitor is a lightweight KDE Plasma 6 applet that displays build status from 
 
 ## Visuals
 
-- Full Representation
-![Full Representation](OSBMonitor_1.png)
 
-- Compact Representation
+![Full Representation](OSBMonitor_1.png)
 ![Compact Representation](OSBMonitor_2.png)
 
 
