@@ -67,6 +67,7 @@ plasmapkg2  --type Plasma/Applet -i de.agundur.osbmonitor.plasmoid
 
 ## 🛠️ Installing OSBMonitor via the openSUSE Build Service Repository  (recommended)
 
+[![build result](https://build.opensuse.org/projects/home:Agundur/packages/OSBMonitor/badge.svg?type=default)](https://build.opensuse.org/package/show/home:Agundur/OSBMonitor)
 
 ```bash
 # Add the repository
