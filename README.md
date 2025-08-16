@@ -13,9 +13,7 @@
   <a href="https://store.kde.org/p/2290729">
   <img src="https://img.shields.io/badge/KDE%20Plasma-1D99F3?logo=kdeplasma&logoColor=fff" alt="OSBMonitor">
   
-
-<noscript><a href="https://liberapay.com/Agundur/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a></noscript>
-</a></div>
+</div>
 
 ## Description
 OSBMonitor is a lightweight KDE Plasma 6 applet that displays build status from your Open Suse Build service projects
@@ -56,7 +54,7 @@ make
 make install (as root)
 ```
 
-### 🖱 KDE GUI
+### KDE GUI
 
 1. Download `de.agundur.osbmonitor.plasmoid`
 2. install with:
@@ -65,7 +63,7 @@ make install (as root)
 plasmapkg2  --type Plasma/Applet -i de.agundur.osbmonitor.plasmoid
 ```
 
-## 🛠️ Installing OSBMonitor via the openSUSE Build Service Repository  (recommended)
+## Installing OSBMonitor via the openSUSE Build Service Repository  (recommended)
 
 [![build result](https://build.opensuse.org/projects/home:Agundur/packages/OSBMonitor/badge.svg?type=default)](https://build.opensuse.org/package/show/home:Agundur/OSBMonitor)
 
