@@ -9,29 +9,26 @@ KCM.SimpleKCM {
 
     property alias cfg_targetProject: update_targetProject.text
     property alias cfg_refreshInterval: update_refreshInterval.value
-    property string cfg_targetProjectDefault: "home:Agundur"
-    property int cfg_refreshIntervalDefault: 60
 
     Kirigami.FormLayout {
         QQC2.TextField {
             id: update_targetProject
-
             Kirigami.FormData.label: i18n("OBS project name")
-            text: plasmoid.configuration.targetProject // Initialwert
-            onTextChanged: {
-                plasmoid.configuration.targetProject = text;
-            }
+            placeholderText: "home:YourUser"
+        }
+
+        QQC2.Label {
+            text: i18n("Requires osc to be installed and configured (~/.config/osc/oscrc)")
+            font.italic: true
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
         }
 
         QQC2.SpinBox {
             id: update_refreshInterval
-
             Kirigami.FormData.label: i18n("Refresh interval (seconds)")
-            from: 10
+            from: 60
             to: 3600
-            onValueChanged: plasmoid.configuration.refreshInterval = value
         }
-
     }
-
 }

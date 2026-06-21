@@ -3,17 +3,15 @@
     <kcfgfile name=""/>
     <group name="General">
         <entry name="refreshInterval" type="Int">
-            <tooltip>Minimum interval in seconds between API checks (recommended: &#x2265;60)</tooltip>
-            <default>60</default>
-            <min>10</min>
-            <!-- technisches Limit -->
+            <tooltip>Interval in seconds between API checks (recommended: ≥300)</tooltip>
+            <default>300</default>
+            <min>60</min>
             <max>3600</max>
-            <!-- 1 Stunde -->
         </entry>
         <entry name="targetProject" type="String">
             <label>OBS project name</label>
-            <tooltip>The Open Build Service project to monitor (e.g. home:Agundur)</tooltip>
-            <default>home:Agundur</default>
+            <tooltip>The Open Build Service project to monitor (e.g. home:YourUser)</tooltip>
+            <default></default>
         </entry>
     </group>
 </kcfg>
