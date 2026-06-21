@@ -1,6 +1,6 @@
 <services>
   <service name="tar_scm" mode="manual">
-      <param name="url">https://www.opencode.net/agundur/osbmonitor.git</param>
+      <param name="url">https://github.com/Agundur-KDE/OSBMonitor.git</param>
     <param name="scm">git</param>
     <param name="revision">HEAD</param>
     <param name="version">0.1.0</param>
