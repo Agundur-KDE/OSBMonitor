@@ -15,6 +15,13 @@ PlasmoidItem {
     property alias buildModel: buildModel
     property var overallStatus: target ? "searching ..." : "not configured"
 
+    // target is a free-text Settings field, interpolated straight into a
+    // shell command below — quote it so a project name with shell
+    // metacharacters can't break or inject into the command.
+    function shellQuote(text) {
+        return "'" + String(text).replace(/'/g, "'\\''") + "'";
+    }
+
     implicitWidth: Kirigami.Units.gridUnit * 30
     implicitHeight: Kirigami.Units.gridUnit * 20
     clip: true
@@ -43,7 +50,7 @@ PlasmoidItem {
         repeat: true
         triggeredOnStart: true
         interval: refreshInterval * 1000
-        onTriggered: executable.connectSource("osc api /build/" + target + "/_result")
+        onTriggered: executable.connectSource("osc api /build/" + shellQuote(target) + "/_result")
     }
 
     ListModel {
