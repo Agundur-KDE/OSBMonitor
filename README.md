@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="icons/256-apps-osbmonitor.png" width="96" alt="OSBMonitor icon" style="background:#232629;border-radius:12px;padding:12px">
   <h1>OSBMonitor</h1>
   <a href="https://kde.org/de/">
     <img src="https://img.shields.io/badge/KDE_Plasma-6.1+-blue?style=flat&logo=kde" alt="KDE Plasma">
