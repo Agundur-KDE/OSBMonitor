@@ -3,7 +3,7 @@
 %endif
 
 Name:           osbmonitor
-Version:        0.1.0
+Version:        0.1.1
 Release:        1%{?dist}
 Summary:        KDE Plasma 6 panel widget for openSUSE Build Service status
 
@@ -69,6 +69,7 @@ fi
 %license LICENSE
 %doc README.md
 %{_datadir}/plasma/plasmoids/de.agundur.osbmonitor/
+%{_datadir}/icons/hicolor/*/apps/osbmonitor.png
 
 %changelog
 * Wed Jul 08 2026 Alec <info@agundur.de> - 0.1.0
@@ -76,3 +77,4 @@ fi
 - Fixed Source0 tarball name mismatch (_service filename param said "ezmonitor")
 - Added osc as a runtime Requires (main.qml shells out to it)
 - Fixed URL (was pointing at a non-existent opencode.net address)
+- Added a real app icon (was borrowing the unrelated "electron" icon before)

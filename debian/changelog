@@ -1,3 +1,9 @@
+osbmonitor (0.1.1-1) unstable; urgency=medium
+
+  * Added a real app icon (was borrowing the unrelated "electron" icon).
+
+ -- Agundur <info@agundur.de>  Wed, 08 Jul 2026 13:00:00 +0200
+
 osbmonitor (0.1.0-1) unstable; urgency=medium
 
   * First automated .deb/.plasmoid/RPM release via GitHub Actions.

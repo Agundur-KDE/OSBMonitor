@@ -5,14 +5,14 @@
         "Id": "de.agundur.osbmonitor",
         "Description": "Watches your projects in your openSUSE Build Service",
         "Category": "Status Information",
-        "Icon": "electron",
+        "Icon": "osbmonitor",
         "Authors": [
             {
                 "Email": "scholz@agundur.de",
                 "Name": "Alec"
             }
         ],
-        "Version": "0.1.0",
+        "Version": "0.1.1",
         "License": "GPL-3.0-or-later",
         "Website": "https://www.agundur.de",
         "BugReportUrl": "https://github.com/Agundur-KDE/OSBMonitor/issues"
