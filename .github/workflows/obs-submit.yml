@@ -63,7 +63,7 @@ jobs:
         # sync point entirely, same pattern as KClaude).
         run: |
           set -euo pipefail
-          cp packaging/OSBMonitor.spec obs-pkg/OSBMonitor.spec
+          cp packaging/osbmonitor.spec obs-pkg/osbmonitor.spec
           cd obs-pkg
           cat > _service <<SERVICE
           <services>
@@ -74,7 +74,7 @@ jobs:
             </service>
           </services>
           SERVICE
-          sed -i "s/^Version:.*/Version:        ${{ steps.ver.outputs.version }}/" OSBMonitor.spec
+          sed -i "s/^Version:.*/Version:        ${{ steps.ver.outputs.version }}/" osbmonitor.spec
           cat _service
 
       - name: Commit to OBS
