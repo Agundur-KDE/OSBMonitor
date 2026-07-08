@@ -3,7 +3,7 @@
     "KPlugin": {
         "Name": "OSBMonitor",
         "Id": "de.agundur.osbmonitor",
-        "Description": "whatches your projects in your open suse build service",
+        "Description": "Watches your projects in your openSUSE Build Service",
         "Category": "Status Information",
         "Icon": "electron",
         "Authors": [
@@ -12,13 +12,10 @@
                 "Name": "Alec"
             }
         ],
-        "Version": "0.1",
-        "License": "GPL",
+        "Version": "0.1.0",
+        "License": "GPL-3.0-or-later",
         "Website": "https://www.agundur.de",
-        "BugReportUrl": "scholz@agundur.de"
+        "BugReportUrl": "https://github.com/Agundur-KDE/OSBMonitor/issues"
     },
-    "X-Plasma-API-Minimum-Version": "6.0",
-    "X-KDE-PluginInfo-Name": "de.agundur.osbmonitor",
-    "X-Plasma-API": "declarativeappletscript",
-    "X-Plasma-MainScript": "ui/main.qml"
+    "X-Plasma-API-Minimum-Version": "6.0"
 }
