@@ -83,5 +83,6 @@ PlasmoidItem {
 
     compactRepresentation: CompactRepresentation {
         overallStatus: root.overallStatus
+        onToggleExpanded: root.expanded = !root.expanded
     }
 }
