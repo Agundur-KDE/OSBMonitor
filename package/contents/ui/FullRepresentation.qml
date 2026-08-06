@@ -27,7 +27,14 @@ DropArea {
             delegate: Rectangle {
                 width: buildList.width
                 height: 32
-                color: status === "failed" ? "#ffcccc" : status === "building" ? "#fffacc" : "#ddffdd"
+                color: {
+                    switch (OSB.statusCategory(status)) {
+                        case "bad": return "#ffcccc"
+                        case "warn": return "#fffacc"
+                        case "good": return "#ddffdd"
+                        default: return "#e0e0e0"
+                    }
+                }
 
                 RowLayout {
                     anchors.fill: parent

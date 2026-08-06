@@ -33,3 +33,26 @@ function summarizeWorstStatusFromModel(model) {
 
     return statusPriority[worstIndex];
 }
+
+// Shared good/warn/bad/unknown classification, used by every representation
+// so the panel icon, popup list and notifications never disagree on color.
+function statusCategory(status) {
+    switch (status) {
+        case "succeeded":
+        case "finished":
+            return "good";
+        case "building":
+        case "scheduled":
+            return "warn";
+        case "failed":
+        case "broken":
+        case "unresolvable":
+            return "bad";
+        case "blocked":
+        case "disabled":
+        case "excluded":
+            return "warn";
+        default:
+            return "unknown"; // "not configured", "searching ...", "error"
+    }
+}

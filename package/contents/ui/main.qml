@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import "code/osbFetcher.js" as OSB
 import org.kde.kirigami as Kirigami
+import org.kde.notification as Notification
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
@@ -14,6 +15,25 @@ PlasmoidItem {
     property int refreshInterval: Plasmoid.configuration.refreshInterval
     property alias buildModel: buildModel
     property var overallStatus: target ? "searching ..." : "not configured"
+    // "" = no poll result seen yet -> suppress the notification on startup,
+    // there's no real "change" to report until we have a first baseline.
+    property string previousStatus: ""
+
+    function reportStatus(newStatus) {
+        if (previousStatus !== "" && newStatus !== previousStatus) {
+            statusNotification.text = i18n("%1 → %2", previousStatus, newStatus)
+            statusNotification.sendEvent()
+        }
+        previousStatus = newStatus
+        overallStatus = newStatus
+    }
+
+    Notification.Notification {
+        id: statusNotification
+        componentName: "plasma_workspace"
+        title: i18n("OSBMonitor: %1", root.target)
+        iconName: Plasmoid.icon
+    }
 
     // target is a free-text Settings field, interpolated straight into a
     // shell command below — quote it so a project name with shell
@@ -35,10 +55,10 @@ PlasmoidItem {
         onNewData: (sourceName, data) => {
             if (data["stdout"]) {
                 OSB.parseXml(data["stdout"]);
-                overallStatus = OSB.summarizeWorstStatusFromModel(buildModel);
+                reportStatus(OSB.summarizeWorstStatusFromModel(buildModel));
             } else {
                 console.log("OSBMonitor: " + data["stderr"]);
-                overallStatus = "error";
+                reportStatus("error");
             }
             disconnectSource(sourceName);
         }
