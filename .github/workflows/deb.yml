@@ -118,9 +118,15 @@ jobs:
       - name: Build .plasmoid
         # Pure QML — no compiling, just zip the package/ dir.
         # GHNS-installable directly, no kpackagetool6 needed even.
+        # Version comes from the git tag (same pattern as KCast's
+        # plasmoid.yml), not from package/metadata.json's own Version
+        # field -- that field is a separate, manually-kept-in-sync value,
+        # and a missed bump there previously shipped a release asset
+        # named after the *previous* version (osbmonitor-0.1.1.plasmoid
+        # attached to the v0.1.2 release).
         run: |
           set -euo pipefail
-          version=$(sed -n 's/.*"Version": "\(.*\)".*/\1/p' package/metadata.json)
+          version="${GITHUB_REF_NAME#v}"
           cd package
           zip -r "../dist/osbmonitor-${version}.plasmoid" metadata.json contents/
           cd ..
