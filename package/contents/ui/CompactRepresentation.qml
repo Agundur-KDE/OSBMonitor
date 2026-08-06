@@ -2,7 +2,6 @@ import QtQuick
 import "code/osbFetcher.js" as OSB
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components 3.0 as PlasmaComponents
-import org.kde.plasma.plasmoid
 
 DropArea {
     id: compact
@@ -18,13 +17,15 @@ DropArea {
         }
     }
 
-    // No explicit size here — same as KClaude's compact view, the panel
-    // already gives an icon-only applet a sane default square size.
-    Kirigami.Icon {
-        anchors.fill: parent
-        source: Plasmoid.icon
-        isMask: true
+    // The actual logo (monitor + tiles) turns into an illegible blob at
+    // panel-icon size (~22px) — a short text stamp reads far more clearly
+    // that small, same idea as the digital clock widget.
+    Text {
+        anchors.centerIn: parent
+        text: "OSB"
         color: compact.statusColor
+        font.bold: true
+        font.pixelSize: parent.height * 0.42
     }
 
     MouseArea {
