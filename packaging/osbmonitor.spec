@@ -3,7 +3,7 @@
 %endif
 
 Name:           osbmonitor
-Version:        0.1.1
+Version:        0.1.2
 Release:        1%{?dist}
 Summary:        KDE Plasma 6 panel widget for openSUSE Build Service status
 
@@ -72,6 +72,14 @@ fi
 %{_datadir}/icons/hicolor/*/apps/osbmonitor.png
 
 %changelog
+* Thu Aug 06 2026 Alec <info@agundur.de> - 0.1.2
+- Compact panel view: status-colored "OSB" text stamp instead of raw
+  wrapped status text
+- Click the panel icon now opens the popup (was doing nothing)
+- System notification when the overall build status actually changes
+- Fixed package list showing broken/unresolvable/blocked/disabled/
+  excluded statuses as green
+
 * Wed Jul 08 2026 Alec <info@agundur.de> - 0.1.0
 - First automated OBS release via GitHub Actions (obs_scm pinned to the tag)
 - Fixed Source0 tarball name mismatch (_service filename param said "ezmonitor")
