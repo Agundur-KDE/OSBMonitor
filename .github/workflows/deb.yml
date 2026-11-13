@@ -51,10 +51,10 @@ jobs:
 
       - name: Build .deb (log via tee)
         env:
-          DEB_BUILD_OPTIONS: parallel=${{ runner.processorCount }}
           DH_VERBOSE: "1"
         run: |
           set -euxo pipefail
+          export DEB_BUILD_OPTIONS="parallel=$(nproc)"
           dpkg-buildpackage -us -uc -b 2>&1 | tee build.log
 
       - name: Collect Debian artifacts into ./dist

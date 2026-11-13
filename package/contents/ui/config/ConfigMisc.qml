@@ -9,6 +9,7 @@ KCM.SimpleKCM {
 
     property alias cfg_targetProject: update_targetProject.text
     property alias cfg_refreshInterval: update_refreshInterval.value
+    property alias cfg_ignoreDisabled: ignoreDisabledCheckBox.checked
 
     Kirigami.FormLayout {
         QQC2.TextField {
@@ -29,6 +30,18 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: i18n("Refresh interval (seconds)")
             from: 60
             to: 3600
+        }
+
+        QQC2.CheckBox {
+            id: ignoreDisabledCheckBox
+            objectName: "ignoreDisabledCheckBox"
+            text: i18n("Do not count disabled builds as warnings")
+        }
+
+        QQC2.Label {
+            text: i18n("Disabled packages stay visible in gray. Errors and active builds still affect the panel indicator.")
+            wrapMode: Text.Wrap
+            Layout.fillWidth: true
         }
     }
 }

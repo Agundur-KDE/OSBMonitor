@@ -3,7 +3,7 @@
 %endif
 
 Name:           osbmonitor
-Version:        0.1.2
+Version:        0.1.3
 Release:        1%{?dist}
 Summary:        KDE Plasma 6 panel widget for openSUSE Build Service status
 
@@ -72,6 +72,10 @@ fi
 %{_datadir}/icons/hicolor/*/apps/osbmonitor.png
 
 %changelog
+* Fri Nov 13 2026 Alec <info@agundur.de> - 0.1.3
+- Add an option to treat disabled builds as neutral in the list and panel.
+- Keep errors and active builds visible across architectures.
+
 * Thu Aug 06 2026 Alec <info@agundur.de> - 0.1.2
 - Compact panel view: status-colored "OSB" text stamp instead of raw
   wrapped status text

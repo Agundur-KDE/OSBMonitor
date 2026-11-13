@@ -31,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends osc
+          sudo apt-get install -y --no-install-recommends osc rpm
 
       - name: Configure osc credentials
         env:
@@ -105,13 +105,13 @@ jobs:
           for i in $(seq 1 60); do
             out="$(osc results)"
             echo "$out"
-            if ! grep -qE "broken|blocked|scheduled|building|dispatching|signing|finished\*" <<<"$out"; then
+            if ! grep -qE "broken|blocked|scheduled|building|dispatching|signing|finished|\*" <<<"$out"; then
               break
             fi
             sleep 20
           done
           echo "$out"
-          if grep -qE "failed|broken|unresolvable" <<<"$out"; then
+          if grep -qE "failed|broken|unresolvable|blocked|scheduled|building|dispatching|signing|finished|\*" <<<"$out"; then
             echo "OBS build did not succeed, see log above" >&2
             exit 1
           fi
@@ -124,6 +124,15 @@ jobs:
           osc getbinaries openSUSE_Tumbleweed x86_64 -d ../rpms
           osc getbinaries openSUSE_Tumbleweed i586 -d ../rpms
           rm -f ../rpms/*.src.rpm ../rpms/_buildenv ../rpms/_statistics ../rpms/rpmlint.log
+          shopt -s nullglob
+          rpms=(../rpms/*.rpm)
+          (( ${#rpms[@]} > 0 )) || { echo 'OBS produced no RPMs' >&2; exit 1; }
+          for rpm in "${rpms[@]}"; do
+            actual="$(rpm -qp --qf '%{VERSION}' "$rpm")"
+            [[ "$actual" == "${{ steps.ver.outputs.version }}" ]] || {
+              echo "Refusing stale RPM: $rpm ($actual)" >&2; exit 1;
+            }
+          done
           ls -la ../rpms
 
       - name: Create or update GitHub Release with RPMs

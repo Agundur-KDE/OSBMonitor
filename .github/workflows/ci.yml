@@ -1,0 +1,13 @@
+name: Status tests
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  status-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: node tests/status.test.cjs

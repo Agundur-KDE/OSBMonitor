@@ -6,10 +6,11 @@ import org.kde.plasma.components 3.0 as PlasmaComponents
 DropArea {
     id: compact
     property string overallStatus: "unknown"
+    property bool ignoreDisabled: false
     signal toggleExpanded()
 
     readonly property color statusColor: {
-        switch (OSB.statusCategory(overallStatus)) {
+        switch (OSB.statusCategory(overallStatus, compact.ignoreDisabled)) {
             case "good": return Kirigami.Theme.positiveTextColor
             case "warn": return Kirigami.Theme.neutralTextColor
             case "bad": return Kirigami.Theme.negativeTextColor

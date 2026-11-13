@@ -10,7 +10,9 @@ import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.plasma.plasmoid
 
 DropArea {
+    id: full
     property var buildModel
+    property bool ignoreDisabled: false
 
     Frame {
         anchors.fill: parent
@@ -21,14 +23,14 @@ DropArea {
 
             anchors.fill: parent
             spacing: 4
-            model: buildModel
+            model: full.buildModel
             clip: true
 
             delegate: Rectangle {
                 width: buildList.width
                 height: 32
                 color: {
-                    switch (OSB.statusCategory(status)) {
+                    switch (OSB.statusCategory(status, full.ignoreDisabled)) {
                         case "bad": return "#ffcccc"
                         case "warn": return "#fffacc"
                         case "good": return "#ddffdd"

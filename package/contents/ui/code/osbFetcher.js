@@ -1,9 +1,18 @@
 // osbFetcher.js
 
-function parseXml(xml) {
+function statusPriority(ignoreDisabled) {
+    var priority = ["broken", "failed", "unresolvable", "blocked", "disabled", "excluded", "building", "finished", "scheduled", "succeeded"];
+    if (ignoreDisabled) {
+        priority.splice(priority.indexOf("disabled"), 1);
+        priority.push("disabled");
+    }
+    return priority;
+}
+
+function parseXml(xml, model, ignoreDisabled) {
     if (!xml) return;
 
-    var statusPriority = ["broken", "failed", "unresolvable", "blocked", "disabled", "excluded", "building", "finished", "scheduled", "succeeded"];
+    var priority = statusPriority(ignoreDisabled);
     var summary = {};
     var re = /<status package="([^"]+)" code="([^"]+)"/g;
     var match;
@@ -11,32 +20,33 @@ function parseXml(xml) {
     while ((match = re.exec(xml)) !== null) {
         var pkg = match[1];
         var code = match[2];
-        if (!(pkg in summary) || statusPriority.indexOf(code) < statusPriority.indexOf(summary[pkg])) {
+        if (!(pkg in summary) || priority.indexOf(code) < priority.indexOf(summary[pkg])) {
             summary[pkg] = code;
         }
     }
 
-    buildModel.clear();
+    model.clear();
     for (var key in summary) {
-        buildModel.append({ package: key, status: summary[key] });
+        model.append({ package: key, status: summary[key] });
     }
 }
 
-function summarizeWorstStatusFromModel(model) {
-    var statusPriority = ["broken", "failed", "unresolvable", "blocked", "disabled", "excluded", "building", "finished", "scheduled", "succeeded"];
-    var worstIndex = statusPriority.length - 1;
+function summarizeWorstStatusFromModel(model, ignoreDisabled) {
+    var priority = statusPriority(ignoreDisabled);
+    var worstIndex = priority.length;
 
     for (var i = 0; i < model.count; ++i) {
-        var idx = statusPriority.indexOf(model.get(i).status);
+        var idx = priority.indexOf(model.get(i).status);
         if (idx !== -1 && idx < worstIndex) worstIndex = idx;
     }
 
-    return statusPriority[worstIndex];
+    return worstIndex < priority.length ? priority[worstIndex] : "succeeded";
 }
 
 // Shared good/warn/bad/unknown classification, used by every representation
 // so the panel icon, popup list and notifications never disagree on color.
-function statusCategory(status) {
+function statusCategory(status, ignoreDisabled) {
+    if (status === "disabled" && ignoreDisabled) return "neutral";
     switch (status) {
         case "succeeded":
         case "finished":

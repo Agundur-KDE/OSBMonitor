@@ -13,11 +13,29 @@ PlasmoidItem {
 
     property string target: Plasmoid.configuration.targetProject
     property int refreshInterval: Plasmoid.configuration.refreshInterval
+    property bool ignoreDisabled: Plasmoid.configuration.ignoreDisabled
+    property string lastResults: ""
     property alias buildModel: buildModel
     property var overallStatus: target ? "searching ..." : "not configured"
     // "" = no poll result seen yet -> suppress the notification on startup,
     // there's no real "change" to report until we have a first baseline.
     property string previousStatus: ""
+
+    function applyResults(xml, notify) {
+        OSB.parseXml(xml, root.buildModel, root.ignoreDisabled);
+        var status = OSB.summarizeWorstStatusFromModel(root.buildModel, root.ignoreDisabled);
+        if (notify) {
+            reportStatus(status);
+        } else {
+            // A settings change is not a remote build event.
+            overallStatus = status;
+            previousStatus = status;
+        }
+    }
+
+    onIgnoreDisabledChanged: {
+        if (lastResults !== "") applyResults(lastResults, false);
+    }
 
     function reportStatus(newStatus) {
         if (previousStatus !== "" && newStatus !== previousStatus) {
@@ -54,8 +72,8 @@ PlasmoidItem {
 
         onNewData: (sourceName, data) => {
             if (data["stdout"]) {
-                OSB.parseXml(data["stdout"]);
-                reportStatus(OSB.summarizeWorstStatusFromModel(buildModel));
+                root.lastResults = data["stdout"];
+                root.applyResults(root.lastResults, true);
             } else {
                 console.log("OSBMonitor: " + data["stderr"]);
                 reportStatus("error");
@@ -79,10 +97,12 @@ PlasmoidItem {
 
     fullRepresentation: FullRepresentation {
         buildModel: root.buildModel
+        ignoreDisabled: root.ignoreDisabled
     }
 
     compactRepresentation: CompactRepresentation {
         overallStatus: root.overallStatus
+        ignoreDisabled: root.ignoreDisabled
         onToggleExpanded: root.expanded = !root.expanded
     }
 }

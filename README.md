@@ -27,6 +27,11 @@ build health at a glance, directly in the Plasma panel.
 - Monitors one configurable OBS project (`home:YourUser` etc.)
 - **Configurable refresh interval** — default 5 minutes, adjustable from
   60 seconds up to an hour (Settings)
+- **Optional neutral disabled status** — enable **Do not count disabled builds
+  as warnings** in Settings. Disabled rows stay visible in gray and no longer
+  make the panel indicator orange. Active builds and errors still count. A
+  project containing only disabled packages shows a neutral indicator. The
+  default retains the previous warning behavior; changes apply immediately.
 
 ## Visuals
 
@@ -66,6 +71,12 @@ Open an issue: [OSBMonitor Issues](https://github.com/Agundur-KDE/OSBMonitor/iss
 ## Contributing
 
 Fork and adapt freely.
+
+Run the status/parser regression tests with Node.js:
+
+```bash
+node tests/status.test.cjs
+```
 
 ## License
 
